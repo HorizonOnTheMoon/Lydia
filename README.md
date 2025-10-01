@@ -134,10 +134,26 @@ await program.methods
   .rpc();
 ```
 
+## Testing
+
+The smart contract has been deployed and verified on Solana Devnet. Test files are available in the `tests/` directory.
+
+```bash
+# Run tests (requires Anchor CLI and Solana devnet connection)
+anchor test --skip-local-validator
+```
+
+**Note**: Test suite includes:
+- Pool initialization
+- USDC to Gold swap
+- USDC to Oil swap
+- Balance verification
+
 ## Future Enhancements
 
 - [ ] Real Pyth Oracle integration for live pricing
 - [ ] Reverse swap (Commodity → USDC)
 - [ ] Liquidity pools with AMM
 - [ ] Staking and yield farming
-- [ ] Governance token 
+- [ ] Governance token
+- [ ] Full test suite with mocked price feeds 
