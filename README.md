@@ -1,5 +1,10 @@
 # Lydia - Commodity Token Swap Platform
 
+[![Rust CI](https://github.com/HorizonOnTheMoon/Lydia/workflows/Rust%20CI/badge.svg)](https://github.com/HorizonOnTheMoon/Lydia/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Solana](https://img.shields.io/badge/Solana-Devnet-9945FF?logo=solana)](https://solana.com)
+[![Anchor](https://img.shields.io/badge/Anchor-0.29.0-blue)](https://www.anchor-lang.com/)
+
 **Spot swap platform for commodity tokens on Solana Devnet**
 
 ## Overview
