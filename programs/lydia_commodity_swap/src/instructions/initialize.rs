@@ -17,52 +17,22 @@ pub struct Initialize<'info> {
     #[account(mut)]
     pub authority: Signer<'info>,
 
-    /// USDC vault to hold received USDC
-    #[account(
-        init,
-        payer = authority,
-        token::mint = usdc_mint,
-        token::authority = pool,
-    )]
+    /// USDC vault to hold received USDC (must be pre-created)
     pub usdc_vault: Account<'info, TokenAccount>,
 
     /// USDC mint (Devnet USDC)
     pub usdc_mint: Account<'info, Mint>,
 
-    /// Oil token mint
-    #[account(
-        init,
-        payer = authority,
-        mint::decimals = 6,
-        mint::authority = pool,
-    )]
+    /// Oil token mint (must be pre-created with pool as authority)
     pub oil_mint: Account<'info, Mint>,
 
-    /// Gold token mint
-    #[account(
-        init,
-        payer = authority,
-        mint::decimals = 6,
-        mint::authority = pool,
-    )]
+    /// Gold token mint (must be pre-created with pool as authority)
     pub gold_mint: Account<'info, Mint>,
 
-    /// Silver token mint
-    #[account(
-        init,
-        payer = authority,
-        mint::decimals = 6,
-        mint::authority = pool,
-    )]
+    /// Silver token mint (must be pre-created with pool as authority)
     pub silver_mint: Account<'info, Mint>,
 
-    /// Natural Gas token mint
-    #[account(
-        init,
-        payer = authority,
-        mint::decimals = 6,
-        mint::authority = pool,
-    )]
+    /// Natural Gas token mint (must be pre-created with pool as authority)
     pub natural_gas_mint: Account<'info, Mint>,
 
     pub token_program: Program<'info, Token>,
