@@ -5,8 +5,8 @@ channel = "stable"
 seeds = false
 skip-lint = false
 
-[programs.localnet]
-lydia_commodity_swap = "Ce7DZvMPxx62AaGCDbmHpQBsdsu5WpDmDiKDd5Qhi7v5"
+[programs.devnet]
+lydia_commodity_swap = "HsBV6Uhk4NV65zTK93ofoT8zYei91bezMdCFXgAPoKE8"
 
 [registry]
 url = "https://api.apr.dev"

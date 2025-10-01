@@ -9,7 +9,7 @@ pub use constants::*;
 pub use instructions::*;
 pub use state::*;
 
-declare_id!("Ce7DZvMPxx62AaGCDbmHpQBsdsu5WpDmDiKDd5Qhi7v5");
+declare_id!("HsBV6Uhk4NV65zTK93ofoT8zYei91bezMdCFXgAPoKE8");
 
 #[program]
 pub mod lydia_commodity_swap {

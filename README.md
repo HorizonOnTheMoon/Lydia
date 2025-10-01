@@ -4,6 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Solana](https://img.shields.io/badge/Solana-Devnet-9945FF?logo=solana)](https://solana.com)
 [![Anchor](https://img.shields.io/badge/Anchor-0.29.0-blue)](https://www.anchor-lang.com/)
+[![Deployed](https://img.shields.io/badge/Deployed-✅%20Live-success)](https://explorer.solana.com/address/HsBV6Uhk4NV65zTK93ofoT8zYei91bezMdCFXgAPoKE8?cluster=devnet)
 
 **Spot swap platform for commodity tokens on Solana Devnet**
 
@@ -71,7 +72,8 @@ solana config set --url devnet
 # Deploy program
 solana program deploy target/deploy/lydia_commodity_swap.so
 
-# Program ID: Ce7DZvMPxx62AaGCDbmHpQBsdsu5WpDmDiKDd5Qhi7v5
+# Program ID: HsBV6Uhk4NV65zTK93ofoT8zYei91bezMdCFXgAPoKE8
+# Deployed: ✅ Live on Devnet
 ```
 
 ## Smart Contract Features
