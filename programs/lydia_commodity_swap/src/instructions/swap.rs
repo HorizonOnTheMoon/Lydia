@@ -3,6 +3,7 @@ use anchor_spl::token::{self, Mint, Token, TokenAccount, MintTo, Transfer};
 use crate::state::{CommodityPool, CommodityType};
 use crate::error::ErrorCode;
 use crate::constants::*;
+use crate::utils::pyth::{get_pyth_price, calculate_commodity_amount};
 
 #[derive(Accounts)]
 pub struct Swap<'info> {
@@ -32,14 +33,15 @@ pub struct Swap<'info> {
     #[account(mut)]
     pub commodity_mint: Account<'info, Mint>,
 
-    /// Pyth price feed account
-    /// CHECK: Validated in instruction logic
-    pub price_feed: AccountInfo<'info>,
+    /// Pyth price update account
+    /// CHECK: Validated in instruction logic using Pyth SDK
+    pub price_update: AccountInfo<'info>,
 
     #[account(mut)]
     pub user: Signer<'info>,
 
     pub token_program: Program<'info, Token>,
+    pub clock: Sysvar<'info, Clock>,
 }
 
 pub fn handler(
@@ -108,50 +110,22 @@ pub fn handler(
         ErrorCode::InvalidUSDCMint
     );
 
-    // Mock prices for devnet testing
-    // In production, integrate with Pyth Oracle for real-time pricing
-    // Price in USD with 8 decimals (Pyth standard)
-    let (price, expo): (i64, i32) = match commodity_type {
-        CommodityType::Oil => (75_00000000, -8),      // $75 per barrel
-        CommodityType::Gold => (1850_00000000, -8),   // $1850 per oz
-        CommodityType::Silver => (24_00000000, -8),   // $24 per oz
-        CommodityType::NaturalGas => (3_00000000, -8), // $3 per MMBtu
-    };
+    // Get price feed ID for this commodity
+    let feed_id = commodity_type.get_price_feed_id();
 
-    require!(price > 0, ErrorCode::InvalidPrice);
+    // Get real-time price from Pyth Oracle
+    let pyth_price = get_pyth_price(
+        &ctx.accounts.price_update,
+        feed_id,
+        &ctx.accounts.clock,
+    )?;
 
-    // Calculate commodity amount
-    // USDC has 6 decimals, commodity tokens have 6 decimals
-    // Price format: price * 10^expo (e.g., $75 = 75_00000000 * 10^-8)
+    msg!("Pyth Oracle Price for {:?}: {} x 10^{}", commodity_type, pyth_price.price, pyth_price.expo);
 
-    // Normalize price to 6 decimals
-    let price_normalized = if expo < 0 {
-        let expo_abs = (-expo) as u32;
-        if expo_abs >= 6 {
-            // Price has more decimals than we need, divide
-            (price as u64).checked_div(10_u64.pow(expo_abs - 6))
-                .ok_or(ErrorCode::MathOverflow)?
-        } else {
-            // Price has fewer decimals, multiply
-            (price as u64).checked_mul(10_u64.pow(6 - expo_abs))
-                .ok_or(ErrorCode::MathOverflow)?
-        }
-    } else {
-        (price as u64).checked_mul(10_u64.pow(expo as u32))
-            .ok_or(ErrorCode::MathOverflow)?
-            .checked_mul(1_000_000)
-            .ok_or(ErrorCode::MathOverflow)?
-    };
-
-    // Calculate commodity amount: (usdc_amount / price)
-    let commodity_amount = (usdc_amount as u128)
-        .checked_mul(1_000_000)
-        .ok_or(ErrorCode::MathOverflow)?
-        .checked_div(price_normalized as u128)
-        .ok_or(ErrorCode::MathOverflow)? as u64;
+    // Calculate commodity amount using Pyth price
+    let commodity_amount = calculate_commodity_amount(usdc_amount, &pyth_price)?;
 
     msg!("Swapping {} USDC for {} {:?} tokens", usdc_amount, commodity_amount, commodity_type);
-    msg!("Price: {} (expo: {})", price, expo);
 
     // Transfer USDC from user to vault
     let transfer_ctx = CpiContext::new(

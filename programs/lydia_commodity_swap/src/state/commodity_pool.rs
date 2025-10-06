@@ -31,12 +31,12 @@ pub enum CommodityType {
 }
 
 impl CommodityType {
-    pub fn get_price_feed(&self) -> &str {
+    pub fn get_price_feed_id(&self) -> &str {
         match self {
-            CommodityType::Oil => crate::constants::OIL_PRICE_FEED,
-            CommodityType::Gold => crate::constants::GOLD_PRICE_FEED,
-            CommodityType::Silver => crate::constants::SILVER_PRICE_FEED,
-            CommodityType::NaturalGas => crate::constants::NATURAL_GAS_PRICE_FEED,
+            CommodityType::Oil => crate::constants::OIL_PRICE_FEED_ID,
+            CommodityType::Gold => crate::constants::GOLD_PRICE_FEED_ID,
+            CommodityType::Silver => crate::constants::SILVER_PRICE_FEED_ID,
+            CommodityType::NaturalGas => crate::constants::NATURAL_GAS_PRICE_FEED_ID,
         }
     }
 }
