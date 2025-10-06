@@ -1,7 +1,8 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{Mint, Token, TokenAccount};
 use crate::state::CommodityPool;
-use crate::constants::POOL_SEED;
+use crate::constants::*;
+use crate::error::ErrorCode;
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
@@ -41,6 +42,37 @@ pub struct Initialize<'info> {
 }
 
 pub fn handler(ctx: Context<Initialize>) -> Result<()> {
+    // Validate that the provided mints match the hardcoded addresses
+    require_keys_eq!(
+        ctx.accounts.usdc_mint.key(),
+        usdc_mint(),
+        ErrorCode::InvalidUSDCMint
+    );
+
+    require_keys_eq!(
+        ctx.accounts.oil_mint.key(),
+        oil_mint(),
+        ErrorCode::InvalidOilMint
+    );
+
+    require_keys_eq!(
+        ctx.accounts.gold_mint.key(),
+        gold_mint(),
+        ErrorCode::InvalidGoldMint
+    );
+
+    require_keys_eq!(
+        ctx.accounts.silver_mint.key(),
+        silver_mint(),
+        ErrorCode::InvalidSilverMint
+    );
+
+    require_keys_eq!(
+        ctx.accounts.natural_gas_mint.key(),
+        natural_gas_mint(),
+        ErrorCode::InvalidNaturalGasMint
+    );
+
     let pool = &mut ctx.accounts.pool;
 
     pool.authority = ctx.accounts.authority.key();

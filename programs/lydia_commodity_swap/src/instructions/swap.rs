@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Mint, Token, TokenAccount, MintTo, Transfer};
 use crate::state::{CommodityPool, CommodityType};
 use crate::error::ErrorCode;
-use crate::constants::POOL_SEED;
+use crate::constants::*;
 
 #[derive(Accounts)]
 pub struct Swap<'info> {
@@ -49,9 +49,14 @@ pub fn handler(
 ) -> Result<()> {
     let pool = &ctx.accounts.pool;
 
-    // Verify the correct mint is being used
+    // Verify the correct mint is being used (hardcoded validation)
     match commodity_type {
         CommodityType::Oil => {
+            require_keys_eq!(
+                ctx.accounts.commodity_mint.key(),
+                oil_mint(),
+                ErrorCode::InvalidOilMint
+            );
             require_keys_eq!(
                 ctx.accounts.commodity_mint.key(),
                 pool.oil_mint,
@@ -61,11 +66,21 @@ pub fn handler(
         CommodityType::Gold => {
             require_keys_eq!(
                 ctx.accounts.commodity_mint.key(),
+                gold_mint(),
+                ErrorCode::InvalidGoldMint
+            );
+            require_keys_eq!(
+                ctx.accounts.commodity_mint.key(),
                 pool.gold_mint,
                 ErrorCode::InvalidCommodityType
             );
         }
         CommodityType::Silver => {
+            require_keys_eq!(
+                ctx.accounts.commodity_mint.key(),
+                silver_mint(),
+                ErrorCode::InvalidSilverMint
+            );
             require_keys_eq!(
                 ctx.accounts.commodity_mint.key(),
                 pool.silver_mint,
@@ -75,11 +90,23 @@ pub fn handler(
         CommodityType::NaturalGas => {
             require_keys_eq!(
                 ctx.accounts.commodity_mint.key(),
+                natural_gas_mint(),
+                ErrorCode::InvalidNaturalGasMint
+            );
+            require_keys_eq!(
+                ctx.accounts.commodity_mint.key(),
                 pool.natural_gas_mint,
                 ErrorCode::InvalidCommodityType
             );
         }
     }
+
+    // Validate USDC vault uses official USDC mint
+    require_keys_eq!(
+        ctx.accounts.user_usdc_account.mint,
+        usdc_mint(),
+        ErrorCode::InvalidUSDCMint
+    );
 
     // Mock prices for devnet testing
     // In production, integrate with Pyth Oracle for real-time pricing
